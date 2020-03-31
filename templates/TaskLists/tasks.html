@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="d-flex justify-content-center">
+        <div class="card p-3 m-5 w-50">
+            <form method="post">
+                {% include "includes/form.html" %}
+            </form>
+        </div>
+    </div>
+        {% for t in tasks %}
+        {{t.name}}
+        {{t.description}}
+        {{ t.to_be_done_date}}
+        <br>
+    {% endfor %}
+{% endblock content %}

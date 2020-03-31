@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% load crispy_forms_field %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    Lists
+{% endblock title %}
+
+
+{% block content %}
+    <div class="d-flex flex-row">
+    <div class="bg-light  w-50">
+    <div class="d-flex flex-column align-items-center mt-5">
+
+        {% if messages %}
+            {% for message in messages %}
+
+                <div class="alert alert-{{ message.tags }}" style="width: 85%">
+                    <h6 class="d-inline">{{ message.tags }}</h6>
+                    <span>{{ message }}</span>
+                </div>
+
+            {% endfor %}
+        {% endif %}
+
+        {% if new_name_form %}
+                <div class="card py-1 px-3 m-3" style="width: 85%">
+                 <form action="{% url "edit-list" current_list.id%}" method="post">
+                     {% csrf_token %}
+                    {{ new_name_form|crispy }}
+                    <button type="submit" class="btn btn-success">Change</button>
+                </form>
+                </div>
+        {% endif %}
+
+        {% if task_rename_form %}
+            <div class="card py-1 px-3 m-3" style="width: 85%">
+                 <form action="{% url "update-task" current_list.id request.GET.task_id %}" method="post">
+                     {% csrf_token %}
+                    {{ task_rename_form|crispy }}
+                    <button type="submit" class="btn btn-success">Change name</button>
+                </form>
+                </div>
+        {% endif %}
+
+
+
+        <div class="card " style="width: 85%; min-height: 400px">
+            <div class="card-title card-header">
+                {% if current_list %}
+                    <span style="float: left">
+                        {{ current_list.name }}
+                    </span>
+                    <span style="float: right">
+                        <form style="display: inline" method="get" action="{% url "sort-tasks" current_list.id %}">
+                            {{ sort_by_form }}
+                            <button type="submit" class="btn btn-success py-0">Sort</button>
+                        </form>
+                        <a class="btn btn-outline-info py-0" href="{% url "display-tasks" current_list.id %}?rename=True">Edit name</a>
+                        <a class="btn btn-outline-danger py-0" href="{% url "delete-list" current_list.id %}">Delete</a>
+                    </span>
+
+                {% endif %}
+            </div>
+
+            <div class="card-body">
+                <table style="display: table; border-collapse: collapse; >
+                        <tr class=""  style="text-align: left;">
+                        <tr>
+                            <th class="text-dark px-2" >Name </th>
+                            <th class="text-primary px-2" >Date Created </th>
+                            <th class="text-success px-2" >To be done date </th>
+                            <th class="text-dark px-2" >Priority</th>
+                            <th class="text-dark px-2" ></th>
+                         </tr>
+                {% if current_list %}
+                     {% for t in tasks %}
+                         <tr {% if t.is_done %} style="background-color: lightgreen;" {% endif %}>
+
+                                <td class="text-dark px-2" >{{t.name}} </td>
+                                <td class="text-primary px-2">{{ t.date_created }}  </td>
+                                <td class="text-success px-2">{{t.to_be_done_date}}  </td>
+                                {% if t.priority == "1" %}
+                                     <td class="text-danger px-2">{{t.get_priority_display}}</td>
+                                {% elif t.priority == "2" %}
+                                     <td class="text-warning px-2">{{t.get_priority_display}}</td>
+                                {% elif t.priority == "3" %}
+                                     <td class="text-info px-2">{{t.get_priority_display}}</td>
+                                {% endif %}
+                                <td>
+                                    {% if t.is_done %}
+                                        <a class="btn btn-light text-primary px-2 py-0 ml-3 text-success" href="{% url "update-task" current_list.id t.id %}?is_done=False">Undone</a>
+                                    {% else %}
+                                        <a class="btn btn-outline-success text-primary px-2 py-0 ml-3 text-success" href="{% url "update-task"  current_list.id t.id %}?is_done=True">Done</a>
+                                    {% endif %}
+                                    <a class="btn btn-outline-primary text-primary px-2 py-0" href="{% url "display-tasks" current_list.id %}?edit_task=True&task_id={{ t.id }}">edit</a>
+                                    <a class="btn btn-outline-danger text-danger px-2 py-0" href="{% url "update-task" current_list.id t.id %}?delete=True">delete</a>
+                                </td>
+
+                         </tr>
+                     {% endfor %}
+                {% endif %}
+                </table>
+            </div>
+        </div>
+
+
+            {% if current_list %}
+                {% if add_new_task %}
+                    <form method="post" action="{% url "add-new-task" current_list.id %}" novalidate class="card p-3 pb-5 mt-3 mb-3" style="width: 85%">
+                          {% csrf_token %}
+                          {{ add_new_task|crispy }}
+                          <input type="submit" class="btn btn-success">
+                      </form>
+                {% else %}
+                    <a class="btn btn-success p-3 m-5" style="width: 85%" href="{% url "display-tasks" current_list.id %}?add_new_task=True">Add new task</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="d-flex flex-column align-items-center mt-0 w-50">
+
+        {% if create_list_form %}
+            <form method="post" action="{% url "add-new-list" %}" novalidate class="card w-75 p-3 pb-5 mt-3 mb-3">
+                  {% csrf_token %}
+                  {{ create_list_form|crispy }}
+                  <input type="submit" class="btn btn-success">
+              </form>
+        {% else %}
+            {% if current_list %}
+                <a class="btn btn-success w-75 m-4 p-4 mt-5" href="{% url "display-tasks" current_list.id %}?create_new_list=True">Create new list</a>
+            {% else %}
+                <a class="btn btn-success w-75 m-4 p-4 mt-5" href="{% url "display-lists" %}?create_new_list=True">Create new list</a>
+            {% endif %}
+        {% endif %}
+
+
+            {% for l in lists %}
+                {% if current_list.id == l.id %}
+                    <a href="{% url "display-tasks" l.id %}" class="btn btn-outline-info p-3 w-75 active" >{{l.name}}</a><br>
+                {% else %}
+                     <a href="{% url "display-tasks" l.id %}" class="btn btn-outline-info p-3 w-75" >{{l.name}}</a><br>
+                {% endif %}
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+{% endblock content %}
+
