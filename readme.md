@@ -1,5 +1,9 @@
 Todo list made using django
 
+app: https://pingwinostodolist.herokuapp.com/
+user: test_user
+password: test_password
+
 SIGN UP: ------------------------------------------------------------------
 
 - Sign-up page is made with CreateUserForm which is extended by django UserCreationForm
