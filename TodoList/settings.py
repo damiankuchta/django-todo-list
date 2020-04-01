@@ -25,7 +25,7 @@ SECRET_KEY = 'u@qr0_hf)vf=(ge!8-pt2#ibp#*@e$go1+sew9fwt66)+u5lwm'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["https://pingwinostodolist.herokuapp.com/"]
+ALLOWED_HOSTS = [".pingwinostodolist.herokuapp.com/"]
 
 
 # Application definition
