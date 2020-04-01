@@ -1,8 +1,8 @@
 Todo list made using django
 
-app: https://pingwinostodolist.herokuapp.com/
-user: test_user
-password: test_password
+- app: https://pingwinostodolist.herokuapp.com/
+- user: test_user
+- password: test_password
 
 SIGN UP: ------------------------------------------------------------------
 
